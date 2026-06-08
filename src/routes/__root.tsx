@@ -118,8 +118,18 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
+          <p>
+            Made with <span className="text-gradient font-semibold">Namely</span> — free business &amp; baby name generator.
+          </p>
+        </footer>
+      </div>
     </QueryClientProvider>
   );
 }
