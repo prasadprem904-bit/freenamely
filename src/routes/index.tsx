@@ -24,7 +24,7 @@ function Index() {
   return (
     <div>
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-4xl px-4 py-24 text-center">
+        <div className="animate-fade-up mx-auto max-w-4xl px-4 py-24 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-1.5 text-sm font-medium text-secondary-foreground">
             <Sparkles className="h-4 w-4 text-primary" /> Instant name ideas
           </span>
