@@ -42,7 +42,7 @@ function Index() {
       <section className="mx-auto grid max-w-5xl gap-6 px-4 pb-24 sm:grid-cols-2">
         <Link
           to="/business"
-          className="group rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
+          className="group animate-fade-up rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
         >
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-hero text-primary-foreground shadow-glow">
             <Briefcase className="h-6 w-6" />
