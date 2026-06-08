@@ -137,3 +137,56 @@ export function generateBabyNames(gender: Gender, startsWith: string, count = 9)
   }
   return shuffle(pool).slice(0, count);
 }
+
+/* ----------------------- SMART SUGGESTIONS ----------------------- */
+// AI-style variant ideas derived from a chosen name. Instant + client-side.
+
+export function generateBusinessVariants(name: string, count = 6): string[] {
+  // Use the first word of the chosen name as the root.
+  const root = name.split(/[\s&]+/)[0].replace(/[^a-zA-Z0-9]/g, "");
+  const base = cap(root.toLowerCase());
+  const out = new Set<string>();
+
+  const builders: Array<() => string> = [
+    () => base + pick(SUFFIXES),
+    () => cap(pick(PREFIXES)) + base,
+    () => base + " " + pick(DESCRIPTORS),
+    () => "The " + base + " " + pick(DESCRIPTORS),
+    () => base + cap(pick(["go", "now", "lab", "box", "pro", "max", "hq"])),
+    () => "Get" + base,
+    () => base + "." + pick(["io", "co", "app", "ai"]),
+    () => cap(pick(["my", "try", "go"])) + base,
+  ];
+
+  let guard = 0;
+  while (out.size < count && guard < count * 20) {
+    out.add(pick(builders)());
+    guard++;
+  }
+  return shuffle([...out]).slice(0, count);
+}
+
+const BABY_SUFFIXES = ["ah", "ie", "a", "elle", "ette", "ina", "lyn", "ya"];
+
+export function generateBabyVariants(name: string, count = 6): string[] {
+  const base = name.replace(/[^a-zA-Z]/g, "");
+  const stem = base.slice(0, Math.max(2, base.length - 1));
+  const out = new Set<string>();
+
+  const builders: Array<() => string> = [
+    () => cap(stem + pick(BABY_SUFFIXES)),
+    () => cap(base + pick(["a", "ie", "y"])),
+    () => cap(stem.slice(0, 3) + pick(BABY_SUFFIXES)),
+    () => cap(base.slice(0, 1) + pick(["ae", "ia", "io", "ya"]) + stem.slice(1)),
+    () => cap(base) + pick(["", "-Rose", "-Lee", "-Mae"]),
+    () => cap(pick(["a", "e", "i"]) + base.toLowerCase()),
+  ];
+
+  let guard = 0;
+  while (out.size < count && guard < count * 20) {
+    const v = pick(builders)();
+    if (v.toLowerCase() !== base.toLowerCase()) out.add(v);
+    guard++;
+  }
+  return shuffle([...out]).slice(0, count);
+}
