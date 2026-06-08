@@ -78,14 +78,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "FreeNamely - Business name & Baby name Generator FREE" },
+      { name: "description", content: "Naming Muse generates business and baby names with AI-powered suggestions." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "FreeNamely - Business name & Baby name Generator FREE" },
+      { property: "og:description", content: "Naming Muse generates business and baby names with AI-powered suggestions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "FreeNamely - Business name & Baby name Generator FREE" },
+      { name: "twitter:description", content: "Naming Muse generates business and baby names with AI-powered suggestions." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e6dd2e1e-2a01-48b3-9b38-52125627305a/id-preview-8c718208--8c14b08f-1925-474c-a541-22b2110972af.lovable.app-1780922507678.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e6dd2e1e-2a01-48b3-9b38-52125627305a/id-preview-8c718208--8c14b08f-1925-474c-a541-22b2110972af.lovable.app-1780922507678.png" },
     ],
     links: [
       {
