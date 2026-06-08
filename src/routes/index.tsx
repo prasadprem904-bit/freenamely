@@ -58,7 +58,8 @@ function Index() {
 
         <Link
           to="/baby"
-          className="group rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
+          className="group animate-fade-up rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
+          style={{ animationDelay: "80ms" }}
         >
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-baby text-foreground shadow-soft">
             <Baby className="h-6 w-6" />
