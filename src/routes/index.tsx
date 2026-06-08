@@ -24,7 +24,7 @@ function Index() {
   return (
     <div>
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-4xl px-4 py-24 text-center">
+        <div className="animate-fade-up mx-auto max-w-4xl px-4 py-24 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-1.5 text-sm font-medium text-secondary-foreground">
             <Sparkles className="h-4 w-4 text-primary" /> Instant name ideas
           </span>
@@ -42,7 +42,7 @@ function Index() {
       <section className="mx-auto grid max-w-5xl gap-6 px-4 pb-24 sm:grid-cols-2">
         <Link
           to="/business"
-          className="group rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
+          className="group animate-fade-up rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
         >
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-hero text-primary-foreground shadow-glow">
             <Briefcase className="h-6 w-6" />
@@ -58,7 +58,8 @@ function Index() {
 
         <Link
           to="/baby"
-          className="group rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
+          className="group animate-fade-up rounded-3xl border border-border bg-gradient-card p-8 shadow-soft transition-transform hover:-translate-y-1"
+          style={{ animationDelay: "80ms" }}
         >
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-baby text-foreground shadow-soft">
             <Baby className="h-6 w-6" />
