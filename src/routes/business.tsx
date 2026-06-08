@@ -39,7 +39,7 @@ function BusinessPage() {
   const [generating, setGenerating] = useState(false);
   const [done, setDone] = useState(false);
   const [suggestFor, setSuggestFor] = useState<{ name: string; variants: string[] } | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const generate = () => {
     setGenerating(true);
