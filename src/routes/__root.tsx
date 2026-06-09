@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
+import namelyLogo from "@/assets/namely-logo.png.asset.json";
 
 function NotFoundComponent() {
   return (
