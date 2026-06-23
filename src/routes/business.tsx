@@ -21,12 +21,17 @@ export const Route = createFileRoute("/business")({
       {
         name: "description",
         content:
-          "Free business name generator. Enter a keyword and industry to instantly create catchy, brandable company and startup names with smart AI-style variants.",
+          "Free business name generator with business type, 1–3 keywords and modern, luxury, professional or creative style options.",
       },
       { property: "og:title", content: "Business Name Generator — Namely" },
       {
         property: "og:description",
-        content: "Instantly create catchy, brandable company names with smart variants — free.",
+        content: "Create catchy business names by type, keywords and brand style — free.",
+      },
+      { name: "twitter:title", content: "Business Name Generator — Namely" },
+      {
+        name: "twitter:description",
+        content: "Create catchy business names by type, keywords and brand style — free.",
       },
     ],
   }),

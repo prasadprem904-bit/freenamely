@@ -23,12 +23,17 @@ export const Route = createFileRoute("/baby")({
       {
         name: "description",
         content:
-          "Free baby name generator. Discover beautiful baby names with origins and meanings, plus smart variant ideas, filtered by gender and starting letter.",
+          "Free baby name generator with gender, starting letter, origin/religion and style filters for boy, girl and unisex names.",
       },
       { property: "og:title", content: "Baby Name Generator — Namely" },
       {
         property: "og:description",
-        content: "Discover beautiful baby names with origins, meanings and smart variants — free.",
+        content: "Find boy, girl and unisex names by starting letter, origin/religion and style — free.",
+      },
+      { name: "twitter:title", content: "Baby Name Generator — Namely" },
+      {
+        name: "twitter:description",
+        content: "Find boy, girl and unisex names by starting letter, origin/religion and style — free.",
       },
     ],
   }),
