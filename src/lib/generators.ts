@@ -20,48 +20,88 @@ function cap(s: string): string {
 
 /* ------------------------- BUSINESS NAMES ------------------------- */
 
-export const BUSINESS_INDUSTRIES = [
-  "Tech & Software",
-  "Fashion & Apparel",
-  "Food & Beverage",
-  "Health & Wellness",
+export const BUSINESS_TYPES = [
+  "Tech",
+  "Clothing",
+  "Restaurant",
+  "Health",
+  "Beauty",
+  "Fitness",
   "Finance",
-  "Creative & Design",
-  "Real Estate",
   "Education",
+  "Real Estate",
+  "Creative Agency",
 ] as const;
+
+export const BUSINESS_INDUSTRIES = BUSINESS_TYPES;
+export type BusinessStyle = "modern" | "luxury" | "professional" | "creative";
 
 const PREFIXES = ["Neo", "Zen", "Aero", "Lumi", "Nova", "Vibe", "Peak", "Eco", "Hyper", "Aura", "Pure", "Bright", "Bold", "Swift", "True"];
 const SUFFIXES = ["ly", "ify", "io", "labs", "hub", "works", "wave", "verse", "ster", "ora", "ium", "go", "spark", "flow", "nest"];
 const DESCRIPTORS = ["Studio", "Collective", "Co", "Group", "House", "Digital", "Solutions", "Ventures", "& Co", "Agency"];
 
-const INDUSTRY_WORDS: Record<string, string[]> = {
-  "Tech & Software": ["byte", "code", "logic", "cloud", "data", "stack", "pixel", "loop"],
-  "Fashion & Apparel": ["thread", "vogue", "stitch", "luxe", "drape", "muse", "atelier", "chic"],
-  "Food & Beverage": ["fork", "feast", "crumb", "harvest", "brew", "spice", "savor", "graze"],
-  "Health & Wellness": ["vital", "thrive", "glow", "calm", "bloom", "pulse", "balance", "nourish"],
-  Finance: ["mint", "vault", "ledger", "capital", "asset", "fund", "coin", "trust"],
-  "Creative & Design": ["ink", "canvas", "form", "shade", "craft", "render", "frame", "palette"],
-  "Real Estate": ["nest", "abode", "haven", "estate", "dwell", "keystone", "manor", "anchor"],
-  Education: ["mind", "learn", "scholar", "spark", "guide", "campus", "mentor", "quill"],
+const BUSINESS_STYLE_WORDS: Record<BusinessStyle, { prefixes: string[]; suffixes: string[]; descriptors: string[] }> = {
+  modern: {
+    prefixes: PREFIXES,
+    suffixes: SUFFIXES,
+    descriptors: ["Labs", "Studio", "Hub", "Works", "Digital", "HQ"],
+  },
+  luxury: {
+    prefixes: ["Luxe", "Maison", "Royal", "Velvet", "Noble", "Opal", "Aurum", "Elite"],
+    suffixes: ["haus", "ora", "elle", "atelier", "society", "maison", "reserve"],
+    descriptors: ["Atelier", "Maison", "House", "Reserve", "Collection", "Society"],
+  },
+  professional: {
+    prefixes: ["Prime", "Core", "Vertex", "Trust", "Apex", "Pioneer", "Summit", "Clarity"],
+    suffixes: ["pro", "group", "partners", "works", "base", "point", "line"],
+    descriptors: ["Group", "Partners", "Solutions", "Consulting", "Associates", "Systems"],
+  },
+  creative: {
+    prefixes: ["Spark", "Muse", "Wild", "Odd", "Fresh", "Pixel", "Craft", "Bloom"],
+    suffixes: ["spark", "muse", "craft", "pop", "lab", "wave", "story"],
+    descriptors: ["Studio", "Collective", "Workshop", "Lab", "House", "Agency"],
+  },
 };
 
-export function generateBusinessNames(keyword: string, industry: string, count = 12): string[] {
-  const base = keyword.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+const INDUSTRY_WORDS: Record<string, string[]> = {
+  Tech: ["byte", "code", "logic", "cloud", "data", "stack", "pixel", "loop"],
+  Clothing: ["thread", "vogue", "stitch", "luxe", "drape", "muse", "atelier", "chic"],
+  Restaurant: ["fork", "feast", "crumb", "harvest", "brew", "spice", "savor", "graze"],
+  Health: ["vital", "thrive", "glow", "calm", "bloom", "pulse", "balance", "nourish"],
+  Beauty: ["glow", "bloom", "aura", "silk", "blush", "pure", "shine", "flora"],
+  Fitness: ["fit", "pulse", "lift", "stride", "core", "flex", "move", "peak"],
+  Finance: ["mint", "vault", "ledger", "capital", "asset", "fund", "coin", "trust"],
+  Education: ["mind", "learn", "scholar", "spark", "guide", "campus", "mentor", "quill"],
+  "Real Estate": ["nest", "abode", "haven", "estate", "dwell", "keystone", "manor", "anchor"],
+  "Creative Agency": ["ink", "canvas", "form", "shade", "craft", "render", "frame", "palette"],
+};
+
+function parseKeywords(input: string): string[] {
+  return input
+    .split(/[\s,]+/)
+    .map((word) => word.toLowerCase().replace(/[^a-z0-9]/g, ""))
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
+export function generateBusinessNames(keyword: string, industry: string, style: BusinessStyle = "modern", count = 12): string[] {
+  const keywords = parseKeywords(keyword);
   const words = INDUSTRY_WORDS[industry] ?? PREFIXES.map((p) => p.toLowerCase());
+  const styleWords = BUSINESS_STYLE_WORDS[style];
   const results = new Set<string>();
-  const root = base || pick(words);
+  const root = keywords.length ? keywords.map(cap).join("") : pick(words);
+  const spacedRoot = keywords.length ? keywords.map(cap).join(" ") : cap(root);
 
   const builders: Array<() => string> = [
-    () => cap(pick(PREFIXES)) + cap(root),
-    () => cap(root) + pick(SUFFIXES),
+    () => cap(pick(styleWords.prefixes)) + cap(root),
+    () => cap(root) + pick(styleWords.suffixes),
     () => cap(root) + cap(pick(words)),
     () => cap(pick(words)) + cap(root),
-    () => cap(root) + " " + pick(DESCRIPTORS),
-    () => cap(pick(PREFIXES)) + cap(pick(words)),
-    () => "The " + cap(root) + " " + pick(DESCRIPTORS),
-    () => cap(root) + pick(SUFFIXES) + " " + pick(DESCRIPTORS),
-    () => cap(pick(words)) + pick(SUFFIXES),
+    () => spacedRoot + " " + pick(styleWords.descriptors),
+    () => cap(pick(styleWords.prefixes)) + cap(pick(words)),
+    () => "The " + spacedRoot + " " + pick(styleWords.descriptors),
+    () => cap(root) + pick(styleWords.suffixes) + " " + pick(DESCRIPTORS),
+    () => cap(pick(words)) + pick(styleWords.suffixes),
     () => "Get" + cap(root),
   ];
 
@@ -76,60 +116,87 @@ export function generateBusinessNames(keyword: string, industry: string, count =
 /* --------------------------- BABY NAMES --------------------------- */
 
 export type Gender = "girl" | "boy" | "neutral";
+export type BabyStyle = "modern" | "traditional" | "unique";
 
-const BABY_NAMES: Record<Gender, { name: string; origin: string; meaning: string }[]> = {
+export const BABY_ORIGIN_RELIGIONS = [
+  "Any",
+  "Hindu / Sanskrit",
+  "Muslim / Arabic",
+  "Christian / Hebrew",
+  "Western / European",
+] as const;
+
+const BABY_NAMES: Record<Gender, { name: string; origin: string; religion: string; style: BabyStyle; meaning: string }[]> = {
   girl: [
-    { name: "Aria", origin: "Italian", meaning: "Air, melody" },
-    { name: "Maya", origin: "Sanskrit", meaning: "Illusion, dream" },
-    { name: "Luna", origin: "Latin", meaning: "Moon" },
-    { name: "Saanvi", origin: "Sanskrit", meaning: "Goddess Lakshmi" },
-    { name: "Isla", origin: "Scottish", meaning: "Island" },
-    { name: "Zoya", origin: "Persian", meaning: "Shining, alive" },
-    { name: "Nova", origin: "Latin", meaning: "New star" },
-    { name: "Anaya", origin: "Hindi", meaning: "Caring, protected" },
-    { name: "Elara", origin: "Greek", meaning: "Bright, shining" },
-    { name: "Myra", origin: "Latin", meaning: "Sweet, fragrant" },
-    { name: "Ivy", origin: "English", meaning: "Faithfulness" },
-    { name: "Aaradhya", origin: "Sanskrit", meaning: "Worshipped" },
+    { name: "Aria", origin: "Italian", religion: "Western / European", style: "modern", meaning: "Air, melody" },
+    { name: "Maya", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "modern", meaning: "Illusion, dream" },
+    { name: "Luna", origin: "Latin", religion: "Western / European", style: "modern", meaning: "Moon" },
+    { name: "Saanvi", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "traditional", meaning: "Goddess Lakshmi" },
+    { name: "Isla", origin: "Scottish", religion: "Western / European", style: "modern", meaning: "Island" },
+    { name: "Zoya", origin: "Arabic", religion: "Muslim / Arabic", style: "modern", meaning: "Shining, alive" },
+    { name: "Nova", origin: "Latin", religion: "Western / European", style: "unique", meaning: "New star" },
+    { name: "Anaya", origin: "Hindi", religion: "Hindu / Sanskrit", style: "modern", meaning: "Caring, protected" },
+    { name: "Elara", origin: "Greek", religion: "Western / European", style: "unique", meaning: "Bright, shining" },
+    { name: "Myra", origin: "Latin", religion: "Western / European", style: "traditional", meaning: "Sweet, fragrant" },
+    { name: "Ivy", origin: "English", religion: "Western / European", style: "unique", meaning: "Faithfulness" },
+    { name: "Aaradhya", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "traditional", meaning: "Worshipped" },
+    { name: "Maryam", origin: "Arabic", religion: "Muslim / Arabic", style: "traditional", meaning: "Beloved" },
+    { name: "Hannah", origin: "Hebrew", religion: "Christian / Hebrew", style: "traditional", meaning: "Grace" },
   ],
   boy: [
-    { name: "Aarav", origin: "Sanskrit", meaning: "Peaceful" },
-    { name: "Liam", origin: "Irish", meaning: "Strong-willed warrior" },
-    { name: "Vihaan", origin: "Sanskrit", meaning: "Dawn, new beginning" },
-    { name: "Ezra", origin: "Hebrew", meaning: "Helper" },
-    { name: "Kai", origin: "Hawaiian", meaning: "Sea" },
-    { name: "Reyansh", origin: "Sanskrit", meaning: "Ray of light" },
-    { name: "Atlas", origin: "Greek", meaning: "Enduring" },
-    { name: "Arjun", origin: "Sanskrit", meaning: "Bright, shining" },
-    { name: "Noah", origin: "Hebrew", meaning: "Rest, comfort" },
-    { name: "Ishaan", origin: "Sanskrit", meaning: "Sun, lord" },
-    { name: "Leo", origin: "Latin", meaning: "Lion" },
-    { name: "Dhruv", origin: "Sanskrit", meaning: "Pole star, constant" },
+    { name: "Aarav", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "modern", meaning: "Peaceful" },
+    { name: "Liam", origin: "Irish", religion: "Western / European", style: "modern", meaning: "Strong-willed warrior" },
+    { name: "Vihaan", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "modern", meaning: "Dawn, new beginning" },
+    { name: "Ezra", origin: "Hebrew", religion: "Christian / Hebrew", style: "traditional", meaning: "Helper" },
+    { name: "Kai", origin: "Hawaiian", religion: "Western / European", style: "unique", meaning: "Sea" },
+    { name: "Reyansh", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "modern", meaning: "Ray of light" },
+    { name: "Atlas", origin: "Greek", religion: "Western / European", style: "unique", meaning: "Enduring" },
+    { name: "Arjun", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "traditional", meaning: "Bright, shining" },
+    { name: "Noah", origin: "Hebrew", religion: "Christian / Hebrew", style: "modern", meaning: "Rest, comfort" },
+    { name: "Ishaan", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "traditional", meaning: "Sun, lord" },
+    { name: "Leo", origin: "Latin", religion: "Western / European", style: "modern", meaning: "Lion" },
+    { name: "Dhruv", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "traditional", meaning: "Pole star, constant" },
+    { name: "Zayan", origin: "Arabic", religion: "Muslim / Arabic", style: "modern", meaning: "Graceful" },
+    { name: "Yusuf", origin: "Arabic", religion: "Muslim / Arabic", style: "traditional", meaning: "God increases" },
   ],
   neutral: [
-    { name: "River", origin: "English", meaning: "Flowing water" },
-    { name: "Sky", origin: "English", meaning: "The heavens" },
-    { name: "Avery", origin: "English", meaning: "Ruler of elves" },
-    { name: "Rowan", origin: "Irish", meaning: "Little red one" },
-    { name: "Sage", origin: "Latin", meaning: "Wise, herb" },
-    { name: "Noor", origin: "Arabic", meaning: "Light" },
-    { name: "Ezra", origin: "Hebrew", meaning: "Helper" },
-    { name: "Kiran", origin: "Sanskrit", meaning: "Ray of light" },
-    { name: "Phoenix", origin: "Greek", meaning: "Rising bird" },
-    { name: "Aanya", origin: "Sanskrit", meaning: "Grace" },
-    { name: "Ari", origin: "Hebrew", meaning: "Lion" },
-    { name: "Devi", origin: "Sanskrit", meaning: "Divine" },
+    { name: "River", origin: "English", religion: "Western / European", style: "modern", meaning: "Flowing water" },
+    { name: "Sky", origin: "English", religion: "Western / European", style: "unique", meaning: "The heavens" },
+    { name: "Avery", origin: "English", religion: "Western / European", style: "modern", meaning: "Ruler of elves" },
+    { name: "Rowan", origin: "Irish", religion: "Western / European", style: "traditional", meaning: "Little red one" },
+    { name: "Sage", origin: "Latin", religion: "Western / European", style: "unique", meaning: "Wise, herb" },
+    { name: "Noor", origin: "Arabic", religion: "Muslim / Arabic", style: "modern", meaning: "Light" },
+    { name: "Ezra", origin: "Hebrew", religion: "Christian / Hebrew", style: "traditional", meaning: "Helper" },
+    { name: "Kiran", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "modern", meaning: "Ray of light" },
+    { name: "Phoenix", origin: "Greek", religion: "Western / European", style: "unique", meaning: "Rising bird" },
+    { name: "Aanya", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "modern", meaning: "Grace" },
+    { name: "Ari", origin: "Hebrew", religion: "Christian / Hebrew", style: "unique", meaning: "Lion" },
+    { name: "Devi", origin: "Sanskrit", religion: "Hindu / Sanskrit", style: "traditional", meaning: "Divine" },
   ],
 };
 
 export interface BabyName {
   name: string;
   origin: string;
+  religion: string;
+  style: BabyStyle;
   meaning: string;
 }
 
-export function generateBabyNames(gender: Gender, startsWith: string, count = 9): BabyName[] {
+export function generateBabyNames(
+  gender: Gender,
+  startsWith: string,
+  originReligion = "Any",
+  style: BabyStyle = "modern",
+  count = 9,
+): BabyName[] {
   let pool = [...BABY_NAMES[gender]];
+  if (originReligion !== "Any") {
+    const filteredByOrigin = pool.filter((n) => n.religion === originReligion);
+    if (filteredByOrigin.length) pool = filteredByOrigin;
+  }
+  const filteredByStyle = pool.filter((n) => n.style === style);
+  if (filteredByStyle.length) pool = filteredByStyle;
   const letter = startsWith.trim().charAt(0).toLowerCase();
   if (letter) {
     const filtered = pool.filter((n) => n.name.toLowerCase().startsWith(letter));

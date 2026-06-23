@@ -8,6 +8,8 @@ import { NameCard } from "@/components/NameCard";
 import { NameSkeleton } from "@/components/NameSkeleton";
 import { SmartSuggestions } from "@/components/SmartSuggestions";
 import {
+  BABY_ORIGIN_RELIGIONS,
+  type BabyStyle,
   generateBabyNames,
   generateBabyVariants,
   type BabyName,
@@ -21,12 +23,17 @@ export const Route = createFileRoute("/baby")({
       {
         name: "description",
         content:
-          "Free baby name generator. Discover beautiful baby names with origins and meanings, plus smart variant ideas, filtered by gender and starting letter.",
+          "Free baby name generator with gender, starting letter, origin/religion and style filters for boy, girl and unisex names.",
       },
       { property: "og:title", content: "Baby Name Generator — Namely" },
       {
         property: "og:description",
-        content: "Discover beautiful baby names with origins, meanings and smart variants — free.",
+        content: "Find boy, girl and unisex names by starting letter, origin/religion and style — free.",
+      },
+      { name: "twitter:title", content: "Baby Name Generator — Namely" },
+      {
+        name: "twitter:description",
+        content: "Find boy, girl and unisex names by starting letter, origin/religion and style — free.",
       },
     ],
   }),
@@ -34,14 +41,22 @@ export const Route = createFileRoute("/baby")({
 });
 
 const GENDERS: { value: Gender; label: string }[] = [
-  { value: "girl", label: "Girl" },
   { value: "boy", label: "Boy" },
-  { value: "neutral", label: "Neutral" },
+  { value: "girl", label: "Girl" },
+  { value: "neutral", label: "Unisex" },
+];
+
+const BABY_STYLES: { value: BabyStyle; label: string }[] = [
+  { value: "modern", label: "Modern" },
+  { value: "traditional", label: "Traditional" },
+  { value: "unique", label: "Unique" },
 ];
 
 function BabyPage() {
-  const [gender, setGender] = useState<Gender>("girl");
+  const [gender, setGender] = useState<Gender>("boy");
   const [startsWith, setStartsWith] = useState("");
+  const [originReligion, setOriginReligion] = useState<string>("Any");
+  const [style, setStyle] = useState<BabyStyle>("modern");
   const [names, setNames] = useState<BabyName[]>([]);
   const [generating, setGenerating] = useState(false);
   const [done, setDone] = useState(false);
@@ -55,7 +70,7 @@ function BabyPage() {
     setNames([]);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      setNames(generateBabyNames(gender, startsWith, 9));
+      setNames(generateBabyNames(gender, startsWith, originReligion, style, 9));
       setGenerating(false);
       setDone(true);
       setTimeout(() => setDone(false), 2200);
@@ -78,36 +93,74 @@ function BabyPage() {
       </div>
 
       <div className="animate-fade-up mt-10 rounded-3xl border border-border bg-gradient-card p-6 shadow-soft sm:p-8">
-        <div className="space-y-2">
-          <Label>Gender</Label>
-          <div className="flex gap-2">
-            {GENDERS.map((g) => (
-              <button
-                key={g.value}
-                onClick={() => setGender(g.value)}
-                className={
-                  "flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors " +
-                  (gender === g.value
-                    ? "border-primary bg-secondary text-foreground"
-                    : "border-border bg-background text-muted-foreground hover:bg-secondary/60")
-                }
-              >
-                {g.label}
-              </button>
-            ))}
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Gender</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {GENDERS.map((g) => (
+                <button
+                  key={g.value}
+                  onClick={() => setGender(g.value)}
+                  className={
+                    "rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors " +
+                    (gender === g.value
+                      ? "border-primary bg-secondary text-foreground"
+                      : "border-border bg-background text-muted-foreground hover:bg-secondary/60")
+                  }
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div className="mt-5 space-y-2">
-          <Label htmlFor="starts">Starts with (optional)</Label>
-          <Input
-            id="starts"
-            maxLength={1}
-            placeholder="e.g. A"
-            value={startsWith}
-            onChange={(e) => setStartsWith(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && generate()}
-          />
+          <div className="space-y-2">
+            <Label htmlFor="starts">Starting Letter (Optional)</Label>
+            <Input
+              id="starts"
+              maxLength={1}
+              placeholder="e.g. A"
+              value={startsWith}
+              onChange={(e) => setStartsWith(e.target.value.replace(/[^a-z]/gi, "").slice(0, 1).toUpperCase())}
+              onKeyDown={(e) => e.key === "Enter" && generate()}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="originReligion">Origin/Religion (Optional)</Label>
+            <select
+              id="originReligion"
+              value={originReligion}
+              onChange={(e) => setOriginReligion(e.target.value)}
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              {BABY_ORIGIN_RELIGIONS.map((origin) => (
+                <option key={origin} value={origin}>
+                  {origin}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Style</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {BABY_STYLES.map((item) => (
+                <button
+                  key={item.value}
+                  onClick={() => setStyle(item.value)}
+                  className={
+                    "rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors " +
+                    (style === item.value
+                      ? "border-primary bg-secondary text-foreground"
+                      : "border-border bg-background text-muted-foreground hover:bg-secondary/60")
+                  }
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <Button
@@ -146,7 +199,7 @@ function BabyPage() {
             <NameCard
               key={n.name}
               name={n.name}
-              subtitle={`${n.origin} · ${n.meaning}`}
+              subtitle={`${n.origin} · ${n.religion} · ${n.meaning}`}
               index={i}
               onVariants={showVariants}
             />

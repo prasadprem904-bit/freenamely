@@ -8,7 +8,8 @@ import { NameCard } from "@/components/NameCard";
 import { NameSkeleton } from "@/components/NameSkeleton";
 import { SmartSuggestions } from "@/components/SmartSuggestions";
 import {
-  BUSINESS_INDUSTRIES,
+  BUSINESS_TYPES,
+  type BusinessStyle,
   generateBusinessNames,
   generateBusinessVariants,
 } from "@/lib/generators";
@@ -20,12 +21,17 @@ export const Route = createFileRoute("/business")({
       {
         name: "description",
         content:
-          "Free business name generator. Enter a keyword and industry to instantly create catchy, brandable company and startup names with smart AI-style variants.",
+          "Free business name generator with business type, 1–3 keywords and modern, luxury, professional or creative style options.",
       },
       { property: "og:title", content: "Business Name Generator — Namely" },
       {
         property: "og:description",
-        content: "Instantly create catchy, brandable company names with smart variants — free.",
+        content: "Create catchy business names by type, keywords and brand style — free.",
+      },
+      { name: "twitter:title", content: "Business Name Generator — Namely" },
+      {
+        name: "twitter:description",
+        content: "Create catchy business names by type, keywords and brand style — free.",
       },
     ],
   }),
@@ -34,7 +40,8 @@ export const Route = createFileRoute("/business")({
 
 function BusinessPage() {
   const [keyword, setKeyword] = useState("");
-  const [industry, setIndustry] = useState<string>(BUSINESS_INDUSTRIES[0]);
+  const [businessType, setBusinessType] = useState<string>(BUSINESS_TYPES[0]);
+  const [style, setStyle] = useState<BusinessStyle>("modern");
   const [names, setNames] = useState<string[]>([]);
   const [generating, setGenerating] = useState(false);
   const [done, setDone] = useState(false);
@@ -48,7 +55,7 @@ function BusinessPage() {
     setNames([]);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      setNames(generateBusinessNames(keyword, industry, 12));
+      setNames(generateBusinessNames(keyword, businessType, style, 12));
       setGenerating(false);
       setDone(true);
       setTimeout(() => setDone(false), 2200);
@@ -73,29 +80,53 @@ function BusinessPage() {
       <div className="animate-fade-up mt-10 rounded-3xl border border-border bg-gradient-card p-6 shadow-soft sm:p-8">
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="keyword">Keyword</Label>
+            <Label htmlFor="businessType">Business Type</Label>
+            <select
+              id="businessType"
+              value={businessType}
+              onChange={(e) => setBusinessType(e.target.value)}
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              {BUSINESS_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="keyword">Keywords (1–3 words)</Label>
             <Input
               id="keyword"
               placeholder="e.g. coffee, fitness, cloud"
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={(e) => setKeyword(e.target.value.split(/[\s,]+/).slice(0, 3).join(" "))}
               onKeyDown={(e) => e.key === "Enter" && generate()}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="industry">Industry</Label>
-            <select
-              id="industry"
-              value={industry}
-              onChange={(e) => setIndustry(e.target.value)}
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            >
-              {BUSINESS_INDUSTRIES.map((i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Style</Label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {([
+                ["modern", "Modern"],
+                ["luxury", "Luxury"],
+                ["professional", "Professional"],
+                ["creative", "Creative"],
+              ] as const).map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => setStyle(value)}
+                  className={
+                    "rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors " +
+                    (style === value
+                      ? "border-primary bg-secondary text-foreground"
+                      : "border-border bg-background text-muted-foreground hover:bg-secondary/60")
+                  }
+                >
+                  {label}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
         </div>
         <Button
